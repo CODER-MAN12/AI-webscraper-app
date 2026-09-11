@@ -1,7 +1,19 @@
 #!/bin/bash
 cd "$(dirname "$0")"
 
-# Locate and enter backend folder safely
+# Automatically add Flutter to PATH if installed in the home directory
+if [ -d "$HOME/flutter/bin" ]; then
+    export PATH="$PATH:$HOME/flutter/bin"
+fi
+
+# Verify flutter command exists
+if ! command -v flutter &> /dev/null; then
+    echo "Error: Flutter is not installed or not in your PATH."
+    echo "Download Flutter from https://docs.flutter.dev/get-started/install"
+    exit 1
+fi
+
+# Locate and enter backend folder
 if [ -d "Backend" ]; then
     cd Backend
 elif [ -d "backend" ]; then
@@ -11,17 +23,21 @@ else
     exit 1
 fi
 
-echo "Starting Backend Server..."
+echo "Setting up Backend..."
 if [ -d ".venv" ]; then
     source .venv/bin/activate
 elif [ -d "venv" ]; then
     source venv/bin/activate
 fi
 
+if [ -f "requirements.txt" ]; then
+    pip install -r requirements.txt
+fi
+
 python3 -m fastapi dev main.py &
 BACKEND_PID=$!
 
-# Return to root and locate frontend folder safely
+# Return to root and enter frontend folder
 cd ..
 if [ -d "Frontend" ]; then
     cd Frontend
@@ -32,6 +48,9 @@ else
     kill $BACKEND_PID
     exit 1
 fi
+
+echo "Installing Flutter dependencies..."
+flutter pub get
 
 echo "Starting Flutter App..."
 flutter run
