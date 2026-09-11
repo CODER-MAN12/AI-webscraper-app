@@ -6,8 +6,6 @@ import 'package:frontend/pages/DataHub.dart';
 import 'package:frontend/pages/SpreadSheetMaker.dart';
 import 'package:http/http.dart' as http;
 
-
-
 class Presentationmaker extends StatefulWidget {
   const Presentationmaker({super.key});
 
@@ -16,30 +14,49 @@ class Presentationmaker extends StatefulWidget {
 }
 
 class _PresentationmakerState extends State<Presentationmaker> {
-  Future<void> sendId() async{
-    final apiUrl = Uri.parse("http://127.0.0.1:8000/data/pptx/powerpointmaker");
-    final response = await http.post(
-      apiUrl,
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: jsonEncode({
-        'id': IdInput.text,
-        'prompt': PromptInput.text
-      }),
-    );
+  String outputText = "Output terminal";
 
-    if (response.statusCode == 201 || response.statusCode == 200) {
-      final Map<String, dynamic> data1 = jsonDecode(response.body);
-      final String id = data1['id'] ?? '';
-      final String prompt = data1['prompt'] ?? '';
+  Future<void> sendId() async {
+    setState(() {
+      outputText = "Generating presentation...";
+    });
+
+    try {
+      final apiUrl = Uri.parse("http://127.0.0.1:8000/data/pptx");
+      final response = await http.post(
+        apiUrl,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode({
+          'id': IdInput.text,
+          'prompt': PromptInput.text,
+        }),
+      );
+
+      if (response.statusCode == 201 || response.statusCode == 200) {
+        final Map<String, dynamic> data1 = jsonDecode(response.body);
+        final String exportedFile = data1['exported_file'] ?? 'Unknown path';
+        setState(() {
+          outputText = "Done!\nSaved to: $exportedFile";
+        });
+      } else {
+        setState(() {
+          outputText = "Error: Server responded with status ${response.statusCode}";
+        });
+      }
+    } catch (e) {
+      setState(() {
+        outputText = "Connection failed: $e";
+      });
     }
   }
+
   final TextEditingController IdInput = TextEditingController();
   final TextEditingController PromptInput = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       backgroundColor: Colors.yellow,
       appBar: AppBar(
@@ -62,7 +79,6 @@ class _PresentationmakerState extends State<Presentationmaker> {
                 Icons.menu,
                 size: 100,
               ),
-
             ),
             ListTile(
               onTap: () {
@@ -131,66 +147,57 @@ class _PresentationmakerState extends State<Presentationmaker> {
               decoration: InputDecoration(
                 hintText: "Enter ID",
                 enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(
-                    color: Color(0xFF1B004A),
-                    width: 2.5
-                  )
-                ),
+                    borderSide: BorderSide(color: Color(0xFF1B004A), width: 2.5)),
                 focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(
-                        color: Color(0xFF1B004A),
-                        width: 2.5
-                    )
-                ),
+                    borderSide: BorderSide(color: Color(0xFF1B004A), width: 2.5)),
               ),
             ),
             TextField(
               controller: PromptInput,
               decoration: InputDecoration(
-                hintText: " Enter How you want the presentation",
-                enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(
-                    color: Color(0xFF1B004A),
-                    width: 2.5,
-                  )
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(
-                    color: Color(0xFF1B004A),
-                    width: 2.5,
-                  )
-                )
-              ),
+                  hintText: " Enter How you want the presentation",
+                  enabledBorder: OutlineInputBorder(
+                      borderSide: BorderSide(
+                        color: Color(0xFF1B004A),
+                        width: 2.5,
+                      )),
+                  focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(
+                        color: Color(0xFF1B004A),
+                        width: 2.5,
+                      ))),
             ),
             ElevatedButton(
-                onPressed: (){
+                onPressed: () {
                   sendId();
                   print("active");
-                  },
+                },
                 style: ElevatedButton.styleFrom(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(15),
-                  ),
-                  minimumSize: Size(double.infinity, 50),
-                  backgroundColor: Color(0xFFCDF760),
-                  textStyle: TextStyle(
-                    fontSize: 20,
-                  )
-                ),
-                child: Text("Enter")
-            ),
-            Expanded(
-                child:
-                  Container(
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      border: Border.all(color: Color(0xFFFFAC05), width: 4), 
-                      borderRadius: BorderRadius.circular(10)
-                      ),
-                    child: Text("Output terminal"),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(15),
                     ),
+                    minimumSize: Size(double.infinity, 50),
+                    backgroundColor: Color(0xFFCDF760),
+                    textStyle: TextStyle(
+                      fontSize: 20,
+                    )),
+                child: Text("Enter")),
+            Expanded(
+              child: Container(
+                width: double.infinity,
+                padding: EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                    color: Colors.white,
+                    border: Border.all(color: Color(0xFFFFAC05), width: 4),
+                    borderRadius: BorderRadius.circular(10)),
+                child: SingleChildScrollView(
+                  child: Text(
+                    outputText,
+                    style: TextStyle(fontSize: 16, color: Colors.black87),
                   ),
+                ),
+              ),
+            ),
           ],
         ),
       ),
