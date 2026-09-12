@@ -117,7 +117,9 @@ class _MenuState extends State<Menu> {
         });
 
 
-        final file = File('lib/data/history.json');
+
+        final directory = await getApplicationDocumentsDirectory();
+        final file = File('${directory.path}/history.json');
         List<dynamic> historyList = [];
 
 

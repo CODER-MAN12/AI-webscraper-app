@@ -6,6 +6,7 @@ import 'package:frontend/pages/Menu.dart';
 import 'package:frontend/pages/SpreadSheetMaker.dart';
 import 'package:frontend/pages/PresentationMaker.dart';
 import 'package:flutter/services.dart';
+import 'package:path_provider/path_provider.dart';
 
 class DataHub extends StatefulWidget {
   const DataHub({super.key});
@@ -15,9 +16,14 @@ class DataHub extends StatefulWidget {
 }
 
 class _DataHubState extends State<DataHub> {
-  Future<List<dynamic>> loadHistory() async{
-    final file = File('lib/data/history.json');
-    if (await file.exists()){
+  Future<File> _getHistoryFile() async {
+    final directory = await getApplicationDocumentsDirectory();
+    return File('${directory.path}/history.json');
+  }
+
+  Future<List<dynamic>> loadHistory() async {
+    final file = await _getHistoryFile();
+    if (await file.exists()) {
       String content = await file.readAsString();
       if (content.isNotEmpty) {
         return jsonDecode(content);
@@ -25,9 +31,10 @@ class _DataHubState extends State<DataHub> {
     }
     return [];
   }
-  Future<void> deleteHistory(int index) async{
-    final file = File('lib/data/history.json');
-    if (await file.exists()){
+
+  Future<void> deleteHistory(int index) async {
+    final file = await _getHistoryFile();
+    if (await file.exists()) {
       String content = await file.readAsString();
       if (content.isNotEmpty) {
         List<dynamic> historyList = jsonDecode(content);
