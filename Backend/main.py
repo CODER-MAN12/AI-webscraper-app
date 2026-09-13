@@ -15,7 +15,6 @@ app.include_router(PPTX_maker)
 app.include_router(Scraper_router)
 app.include_router(excel_maker)
 
-# This block is CRITICAL for the .exe to run the server
 if __name__ == "__main__":
-    # Passing the 'app' object directly works best for PyInstaller
+
     uvicorn.run(app, host="127.0.0.1", port=8000)
