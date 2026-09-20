@@ -18,3 +18,4 @@ Getting Started:
 2. Run the launcher.bat file to start both the backend server and the frontend app at the same time.
 3. Keep the exe file in the folder.
 4. Keep the app running for atleast one minute before using it 
+5. If your extraction tool prompts you about long file paths, you can safely skip those files as they are not required to run the app.
