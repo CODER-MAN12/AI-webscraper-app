@@ -17,4 +17,4 @@ Getting Started:
 1. Clone the repository: https://github.com/CODER-MAN12/AI-webscraper-app.git
 2. Run the launcher.bat file to start both the backend server and the frontend app at the same time.
 3. Keep the exe file in the folder.
-4. Keep the app running for atleast one minute before using it 
+4. Keep the app running for atleast 7 minute before using it 
