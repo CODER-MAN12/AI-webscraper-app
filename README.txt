@@ -11,10 +11,9 @@ Features:
 Project Structure:
 - Backend folder: FastAPI Python backend and scraping engine
 - Frontend folder: Flutter desktop interface
-- launcher.bat: Startup script for seamless local execution
+-exeStartup script for seamless local execution
 
 Getting Started:
-1. Clone the repository: https://github.com/CODER-MAN12/AI-webscraper-app.git
-2. Run the launcher.bat file to start both the backend server and the frontend app at the same time.
+2. Run the exe file to start both the backend server and the frontend app at the same time.
 3. Keep the exe file in the folder.
 4. Keep the app running for atleast 7 minute before using it 
